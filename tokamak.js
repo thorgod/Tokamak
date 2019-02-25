@@ -20,8 +20,8 @@ var gui = new dat.GUI();
 
 var shape = gui.addFolder('shape');
 shape.add(options, 'd', -2, 2,.1).listen();  //D Shape
-shape.add(options, 'ro', 0, 20,.2).listen(); //Radius
-shape.add(options, 'k', 0, 5,.2).listen(); //Hieght 
+shape.add(options, 'ro', 0, 100,1).listen(); //Radius
+shape.add(options, 'k', 0, 40,.4).listen(); //Hieght 
 shape.add(options, 'a', 0, 100).listen();  //Scale
 shape.open();
 
