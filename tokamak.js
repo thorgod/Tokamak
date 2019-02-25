@@ -4,9 +4,30 @@ var mesh;
 var extrudeSettings;
 var line;
 var startpoint = 0;
-init();
-animate();
 
+
+
+//Options for D
+var options = {
+  d: .313,  //D Shape
+  ro:  0,  //Radius
+  k : 1.5, 
+  a : 20
+};
+
+//GUI For sliders. Temporary.
+var gui = new dat.GUI();
+
+var shape = gui.addFolder('shape');
+shape.add(options, 'd', -2, 2,.1).listen();  //D Shape
+shape.add(options, 'ro', 0, 20,.2).listen(); //Radius
+shape.add(options, 'k', 0, 5,.2).listen(); //Hieght 
+shape.add(options, 'a', 0, 100).listen();  //Scale
+shape.open();
+
+
+
+//(Extrude spline)
 function drawpath()
 {
 	var randomPoints = [];
@@ -24,80 +45,39 @@ function drawpath()
 	};
 }
 
-function drawD()
+
+
+// Main Drawing.
+var drawEveryThing = function ()
 {
 	var geometry = new THREE.Geometry();
 	var pts2 = [], numPts = 30;
 	var theta = 0;
-	var d = startpoint;
-	var ro = 0;
-	var k = 1.5;
-	var a = 20;
+
+	// -----------2D  D Vector drwaing here-----------
 	for (var j= 0; j < numPts+1; j++){
 	 theta= 2*j /numPts* Math.PI;;
-	 var rDee= ro + a*Math.cos(theta+ d * Math.sin(theta) )-1;
-	 var zDee= a*k*Math.sin(theta);
+	 var rDee= options.ro + options.a*Math.cos(theta+ options.d * Math.sin(theta) )-1;
+	 var zDee= options.a*options.k*Math.sin(theta);
 	 geometry.vertices.push(new THREE.Vector3 (zDee,0,rDee)) ;
 	 pts2.push(new THREE.Vector2 (((zDee)),(rDee)))
 	}
 	
-	var material = new THREE.LineBasicMaterial({
-		color: 0x0000ff
-	});
-	line = new THREE.Line( geometry, material );
-	
-	
-	var shape = new THREE.Shape( pts2 );
-	drawpath();
-	var geometry2 = new THREE.ExtrudeGeometry( shape, extrudeSettings );
-	var material = new THREE.MeshLambertMaterial( { color: 0xb00000, wireframe: false } );
-	mesh = new THREE.Mesh( geometry2, material );
-	mesh.geometry.dynamic = true;
-	mesh.rotation.z  = Math.PI / 2;
-	
-}
-var postive = true;
-function updateD()
-{
-	var geometry = new THREE.Geometry();
-	var pts2 = [], numPts = 30;
-	var theta = 0;
-	//var d = THREE.Math.randFloat( 0, 1 ) ;
-	var d = startpoint;
-	if(postive)
-	{
-		startpoint += .02;
-	}
-	else
-	{
-		startpoint -= .02;
-		
-	}
-	if(startpoint > 1.1)
-	{
-		postive = false;
-	}
-	if(startpoint < 0)
-	{
-		postive = true;
-	}
-	
-	var ro = 0;
-	var k = 1.5;
-	var a = 20;
-	for (var j= 0; j < numPts+1; j++){
-	 theta= 2*j /numPts* Math.PI;;
-	 var rDee= ro + a*Math.cos(theta+ d * Math.sin(theta) )-1;
-	 var zDee= a*k*Math.sin(theta);
-	 geometry.vertices.push(new THREE.Vector3 (zDee,0,rDee)) ;
-	 pts2.push(new THREE.Vector2 (((zDee)),(rDee)))
-	}
+	//------------ Rotate around spline (AKA Make 3D)----------
+	//Remove Mesh, re-add mesh. 
+	//Make red!
+	//Allign mesh so its horizional with camera
 	var shape = new THREE.Shape( pts2 );
 	var material = new THREE.LineBasicMaterial({
 		color: 0x0000ff
 	});
 	var line2 = new THREE.Line( geometry, material );
+	
+	drawpath();
+	
 	var geometry2 = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+	
+
 	scene.remove(mesh);
 	var material = new THREE.MeshLambertMaterial( { color: 0xb00000, wireframe: false } );
 	mesh = new THREE.Mesh( geometry2, material ); 
@@ -106,7 +86,9 @@ function updateD()
 	scene.add( mesh );
 }
 
-function init() {
+
+var init = function ()
+{
 	var info = document.createElement( 'div' );
 	info.style.position = 'absolute';
 	info.style.top = '10px';
@@ -131,20 +113,11 @@ function init() {
 	var light = new THREE.PointLight( 0xffffff );
 	light.position.copy( camera.position );
 	scene.add( light );
-	//
-	drawD();
-	//
-	scene.add( mesh );
-	scene.add( line );
-	
-
-	
-	
-	
 	
 	
 }
-function animate() {
+var animate = function ()
+{
 	requestAnimationFrame( animate );
 	
 	controls.update();
@@ -156,6 +129,10 @@ function animate() {
 	
 }
 window.setInterval(function(){
-   updateD();
+   drawEveryThing();
   /// call your function here
 }, 100);
+
+
+init();
+animate();
