@@ -105,7 +105,7 @@ var init = function ()
 	document.body.appendChild( renderer.domElement );
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
-	camera.position.set( 0, 0, 500 );
+	camera.position.set( 0, 0, 100 );
 	controls = new THREE.TrackballControls( camera, renderer.domElement );
 	controls.minDistance = 200;
 	controls.maxDistance = 500;
